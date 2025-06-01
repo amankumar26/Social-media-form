@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Social Media Seva Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #f0f4f8;
+      --form-bg: rgba(255, 255, 255, 0.15);
+      --text-color: #000;
+      --input-bg: #fff;
+      --btn-bg: linear-gradient(to right, #667eea, #764ba2);
+      --btn-hover: linear-gradient(to right, #5a67d8, #6b46c1);
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #121212;
+      --form-bg: rgba(30, 30, 30, 0.35);
+      --text-color: #fff;
+      --input-bg: #1e1e1e;
+      --btn-bg: linear-gradient(to right, #4e54c8, #8f94fb);
+      --btn-hover: linear-gradient(to right, #3e43b2, #7f84eb);
+    }
+
+    body {
+      font-family: 'Poppins', 'Noto Sans Devanagari', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: start;
+      padding: 40px 20px;
+      overflow-y: auto;
+    }
+
+    .glass-form {
+      background: var(--form-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 40px 30px;
+      max-width: 750px;
+      width: 100%;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+      position: relative;
+      animation: fadeInUp 1s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .form-header img {
+      max-width: 100px;
+      margin-bottom: 15px;
+    }
+
+    .form-header h3 {
+      font-weight: 700;
+      font-size: 1.8rem;
+    }
+
+    .lang-toggle {
+      text-align: right;
+      margin-bottom: 20px;
+    }
+
+    .btn-lang {
+      background-color: #ffffffcc;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    input.form-control {
+      border-radius: 12px;
+      border: none;
+      font-size: 1.05rem;
+      padding: 12px 15px;
+      background: var(--input-bg);
+      color: var(--text-color);
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+    }
+
+    input.form-control::placeholder {
+      color: #999;
+      font-size: 0.95rem;
+    }
+
+    input.form-control:focus {
+      transform: scale(1.02);
+      box-shadow: 0 0 10px rgba(78, 84, 200, 0.4);
+      outline: none;
+    }
+
+    .btn-primary {
+      background: var(--btn-bg);
+      border: none;
+      border-radius: 10px;
+      padding: 10px 30px;
+      font-weight: 700;
+    }
+
+    .btn-primary:hover {
+      background: var(--btn-hover);
+      transform: translateY(-2px);
+    }
+
+    #inactive-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      z-index: 10;
+      font-weight: bold;
+      font-size: 1.3rem;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: #222;
+    }
+
+    #form-message {
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<div class="glass-form" id="form-container">
+  <div id="inactive-overlay">⚠️ सत साहेब जी, रिपोर्ट फॉर्मेट अभी बंद है।</div>
+
+  <div class="lang-toggle">
+    <button id="langBtn" class="btn-lang">🌐 Hindi</button>
+    <button id="themeToggle" class="btn-lang ms-2">🌓 Dark Mode</button>
+  </div>
+
+  <div class="form-header">
+    <img src="https://img.icons8.com/fluency/96/clipboard.png" alt="Form Icon">
+    <h3 id="form-title">Social Media Seva Form</h3>
+  </div>
+
+  <div id="form-message"></div>
+
+  <form id="activity-form">
+    <div class="row g-4" id="form-fields"></div>
+    <div class="mt-4 text-center">
+      <button type="submit" class="btn btn-primary px-4" id="submitBtn">Submit</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const translations = {
+    en: {
+      title: "Social Media Seva Form",
+      name: "Enter Your Name/Address",
+      phone: "WhatsApp Number",
+      facebook: "Facebook Post",
+      twitter: "X(Twitter)Post",
+      thread: "Thread Post",
+      instagram: "Instagram Post",
+      pinterest: "Pinterest Pins",
+      satsang: "Satsang Share",
+      ashram: "Ashram Id Seva",
+      state: "State Id Seva",
+      seva: "11 am Seva",
+      youtube: "YouTube Video Watch",
+      submit: "Submit",
+      closed: "🔉 Sat Saheb Ji, Seva reporting is currently closed."
+    },
+    hi: {
+      title: "सोशल मीडिया सेवा फॉर्म",
+      name: "अपना नाम/एड्रेस दर्ज करें",
+      phone: "व्हाट्सएप नंबर",
+      facebook: "फेसबुक पोस्ट",
+      twitter: "X (ट्विटर)पोस्ट",
+      thread: "थ्रेड पोस्ट",
+      instagram: "इंस्टाग्राम पोस्ट",
+      pinterest: "पिंटरेस्ट पिन",
+      satsang: "सत्संग शेयर",
+      ashram: "आश्रम ID सेवा",
+      state: "राज्य ID सेवा",
+      seva: "11 बजे की सेवा",
+      youtube: "यूट्यूब वीडियो देखें",
+      submit: "जमा करें",
+      closed: "🔉 सत साहेब जी, सेवा की हाजरी अभी बंद है।"
+    }
+  };
+
+  const placeholders = {
+    en: {
+      name: "Eg: Aman Das/Jasola",
+      phone: "Eg: 9876543210",
+      facebook: "Number of posts today",
+      twitter: "Number of tweets",
+      thread: "Thread post count",
+      instagram: "Instagram posts count",
+      pinterest: "Pins count",
+      satsang: "Total Satsang Share",
+      ashram: "Total Likes of Day",
+      state: "Total Likes of Day",
+      seva: "Eg: 3 keyword",
+      youtube: "Total Videos watched"
+    },
+    hi: {
+      name: "उदाहरण: अमन दास/जसोला",
+      phone: "उदाहरण: 9876543210",
+      facebook: "फेसबुक पर कितने पोस्ट किए?",
+      twitter: "X पर कितने पोस्ट किए?",
+      thread: "थ्रेड पर कितने पोस्ट किए?",
+      instagram: "इंस्टाग्राम पर कितने पोस्ट किए?",
+      pinterest: "पिंट्रीसेट पर कितने पोस्ट किए?",
+      satsang: "शेयर की संख्या",
+      ashram: "पूरे दिन में कितने Likes किए?",
+      state: "पूरे दिन में कितने Likes किए?",
+      seva: "कितने कीवर्ड्स सर्च किए?",
+      youtube: "देखे गए वीडियो की संख्या ।"
+    }
+  };
+
+  let currentLang = "en";
+  const fields = ["name", "phone", "facebook", "twitter", "thread", "instagram", "pinterest", "satsang", "ashram", "state", "seva", "youtube"];
+
+  function renderForm(lang = "en") {
+    const formFields = document.getElementById("form-fields");
+    const t = translations[lang];
+    const p = placeholders[lang];
+
+    document.getElementById("form-title").textContent = t.title;
+    document.getElementById("submitBtn").textContent = t.submit;
+
+    formFields.innerHTML = `
+      <div class="col-md-6">
+        <label for="name">${t.name}</label>
+        <input type="text" class="form-control" id="name" placeholder="${p.name}" required>
+      </div>
+      <div class="col-md-6">
+        <label for="phone">${t.phone}</label>
+        <input type="tel" class="form-control" id="phone" placeholder="${p.phone}" required>
+      </div>
+    `;
+
+    fields.slice(2).forEach(field => {
+      formFields.innerHTML += `
+        <div class="col-md-6">
+          <label for="${field}">${t[field]}</label>
+          <input type="number" class="form-control" id="${field}" placeholder="${p[field]}">
+        </div>
+      `;
+    });
+
+    const savedPhone = localStorage.getItem('userPhone');
+    if (savedPhone) {
+      const phoneInput = document.getElementById('phone');
+      phoneInput.value = savedPhone;
+      phoneInput.readOnly = true;
+    }
+  }
+
+  document.getElementById('langBtn').addEventListener('click', () => {
+    currentLang = currentLang === "en" ? "hi" : "en";
+    document.getElementById("langBtn").textContent = currentLang === "en" ? "🌐 Hindi" : "🌐 English";
+    renderForm(currentLang);
+  });
+
+  renderForm(currentLang);
+
+  // Theme toggle
+  const themeToggle = document.getElementById("themeToggle");
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+    themeToggle.textContent = theme === "dark" ? "☀️ Light Mode" : "🌓 Dark Mode";
+  }
+
+  themeToggle.addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme") || "light";
+    const next = current === "light" ? "dark" : "light";
+    applyTheme(next);
+  });
+
+  applyTheme(localStorage.getItem("theme") || "light");
+
+  const form = document.getElementById('activity-form');
+  const formContainer = document.getElementById('form-container');
+  const messageDiv = document.getElementById('form-message');
+  const overlay = document.getElementById('inactive-overlay');
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbx3xPUprl6OrGX1j283GljCHKmmBEKTnEEODlH-Eyp2LfGcStW-FR8P8r_sl4SfxqoCcQ/exec';
+  let formClosed = false;
+
+  fetch(scriptURL)
+    .then(res => res.json())
+    .then(data => {
+      if (data.status !== 'active') {
+        formClosed = true;
+        formContainer.classList.add('disabled');
+        overlay.style.display = 'flex';
+        messageDiv.textContent = translations[currentLang].closed;
+        form.querySelectorAll('input').forEach(input => input.readOnly = true);
+        document.getElementById('submitBtn').disabled = true;
+      }
+    })
+    .catch(() => {
+      messageDiv.textContent = translations[currentLang].closed;
+    });
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (formClosed) return alert(translations[currentLang].closed);
+
+    const phoneInput = document.getElementById('phone');
+    const enteredPhone = phoneInput.value.trim();
+    const savedPhone = localStorage.getItem('userPhone');
+
+    if (savedPhone && savedPhone !== enteredPhone) {
+      alert("⚠️ आप सिर्फ अपने नंबर से रिपोर्ट दे सकते हैं।");
+      return;
+    }
+
+    if (!savedPhone) {
+      localStorage.setItem('userPhone', enteredPhone);
+    }
+
+    const data = {};
+    fields.forEach(f => data[f] = document.getElementById(f)?.value || '');
+
+    document.getElementById("submitBtn").disabled = true;
+    document.getElementById("submitBtn").textContent = currentLang === 'en' ? "Submitting..." : "जमा हो रहा है...";
+
+    fetch(scriptURL, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+    .then(res => res.text())
+    .then(text => {
+      alert(text);
+      form.reset();
+      phoneInput.value = enteredPhone;
+      phoneInput.readOnly = true;
+      document.getElementById("submitBtn").disabled = false;
+      document.getElementById("submitBtn").textContent = translations[currentLang].submit;
+    })
+    .catch(err => {
+      alert("Error: " + err);
+      document.getElementById("submitBtn").disabled = false;
+      document.getElementById("submitBtn").textContent = translations[currentLang].submit;
+    });
+  });
+</script>
+
+</body>
+</html>
+
