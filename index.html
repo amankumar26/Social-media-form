@@ -34,7 +34,6 @@
       justify-content: center;
       align-items: start;
       padding: 40px 20px;
-      overflow-y: auto;
     }
 
     .glass-form {
@@ -97,31 +96,6 @@
       padding: 12px 15px;
       background: var(--input-bg);
       color: var(--text-color);
-      box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
-    }
-
-    input.form-control::placeholder {
-      color: #999;
-      font-size: 0.95rem;
-    }
-
-    input.form-control:focus {
-      transform: scale(1.02);
-      box-shadow: 0 0 10px rgba(78, 84, 200, 0.4);
-      outline: none;
-    }
-
-    .btn-primary {
-      background: var(--btn-bg);
-      border: none;
-      border-radius: 10px;
-      padding: 10px 30px;
-      font-weight: 700;
-    }
-
-    .btn-primary:hover {
-      background: var(--btn-hover);
-      transform: translateY(-2px);
     }
 
     #inactive-overlay {
@@ -148,13 +122,13 @@
   </style>
 </head>
 <body>
-
 <div class="glass-form" id="form-container">
   <div id="inactive-overlay">⚠️ सत साहेब जी, रिपोर्ट फॉर्मेट अभी बंद है।</div>
 
-  <div class="lang-toggle">
+  <div class="lang-toggle d-flex justify-content-end gap-2">
     <button id="langBtn" class="btn-lang">🌐 Hindi</button>
-    <button id="themeToggle" class="btn-lang ms-2">🌓 Dark Mode</button>
+    <button id="themeToggle" class="btn-lang">🌓 Dark Mode</button>
+    <button type="button" id="previewBtn" class="btn-lang">👁️ Preview</button>
   </div>
 
   <div class="form-header">
@@ -173,188 +147,186 @@
 </div>
 
 <script>
-  const translations = {
-    en: {
-      title: "Social Media Seva Form",
-      name: "Enter Your Name/Address",
-      phone: "WhatsApp Number",
-      facebook: "Facebook Post",
-      twitter: "X(Twitter)Post",
-      thread: "Thread Post",
-      instagram: "Instagram Post",
-      pinterest: "Pinterest Pins",
-      satsang: "Satsang Share",
-      ashram: "Ashram Id Seva",
-      state: "State Id Seva",
-      seva: "11 am Seva",
-      youtube: "YouTube Video Watch",
-      submit: "Submit",
-      closed: "🔉 Sat Saheb Ji, Seva reporting is currently closed."
-    },
-    hi: {
-      title: "सोशल मीडिया सेवा फॉर्म",
-      name: "अपना नाम/एड्रेस दर्ज करें",
-      phone: "व्हाट्सएप नंबर",
-      facebook: "फेसबुक पोस्ट",
-      twitter: "X (ट्विटर)पोस्ट",
-      thread: "थ्रेड पोस्ट",
-      instagram: "इंस्टाग्राम पोस्ट",
-      pinterest: "पिंटरेस्ट पिन",
-      satsang: "सत्संग शेयर",
-      ashram: "आश्रम ID सेवा",
-      state: "राज्य ID सेवा",
-      seva: "11 बजे की सेवा",
-      youtube: "यूट्यूब वीडियो देखें",
-      submit: "जमा करें",
-      closed: "🔉 सत साहेब जी, सेवा की हाजरी अभी बंद है।"
-    }
-  };
+const translations = {
+  en: {
+    title: "Social Media Seva Form",
+    name: "Enter Your Name/Address",
+    phone: "WhatsApp Number",
+    facebook: "Facebook Post",
+    twitter: "X(Twitter)Post",
+    thread: "Thread Post",
+    instagram: "Instagram Post",
+    pinterest: "Pinterest Pins",
+    satsang: "Satsang Share",
+    ashram: "Ashram Id Seva",
+    state: "State Id Seva",
+    seva: "11 am Seva",
+    youtube: "YouTube Video Watch",
+    submit: "Submit",
+    closed: "🔉 Sat Saheb Ji, Seva reporting is currently closed."
+  },
+  hi: {
+    title: "सोशल मीडिया सेवा फॉर्म",
+    name: "अपना नाम/एड्रेस दर्ज करें",
+    phone: "व्हाट्सएप नंबर",
+    facebook: "फेसबुक पोस्ट",
+    twitter: "X (ट्विटर)पोस्ट",
+    thread: "थ्रेड पोस्ट",
+    instagram: "इंस्टाग्राम पोस्ट",
+    pinterest: "पिंटरेस्ट पिन",
+    satsang: "सत्संग शेयर",
+    ashram: "आश्रम ID सेवा",
+    state: "राज्य ID सेवा",
+    seva: "11 बजे की सेवा",
+    youtube: "यूट्यूब वीडियो देखें",
+    submit: "जमा करें",
+    closed: "🔉 सत साहेब जी, सेवा की हाजरी अभी बंद है।"
+  }
+};
 
-  const placeholders = {
-    en: {
-      name: "Eg: Aman Das/Jasola",
-      phone: "Eg: 9876543210",
-      facebook: "Number of posts today",
-      twitter: "Number of tweets",
-      thread: "Thread post count",
-      instagram: "Instagram posts count",
-      pinterest: "Pins count",
-      satsang: "Total Satsang Share",
-      ashram: "Total Likes of Day",
-      state: "Total Likes of Day",
-      seva: "Eg: 3 keyword",
-      youtube: "Total Videos watched"
-    },
-    hi: {
-      name: "उदाहरण: अमन दास/जसोला",
-      phone: "उदाहरण: 9876543210",
-      facebook: "फेसबुक पर कितने पोस्ट किए?",
-      twitter: "X पर कितने पोस्ट किए?",
-      thread: "थ्रेड पर कितने पोस्ट किए?",
-      instagram: "इंस्टाग्राम पर कितने पोस्ट किए?",
-      pinterest: "पिंट्रीसेट पर कितने पोस्ट किए?",
-      satsang: "शेयर की संख्या",
-      ashram: "पूरे दिन में कितने Likes किए?",
-      state: "पूरे दिन में कितने Likes किए?",
-      seva: "कितने कीवर्ड्स सर्च किए?",
-      youtube: "देखे गए वीडियो की संख्या ।"
-    }
-  };
+const placeholders = {
+  en: {
+    name: "Eg: Aman Das/Jasola",
+    phone: "Eg: 9876543210",
+    facebook: "Number of posts today",
+    twitter: "Number of tweets",
+    thread: "Thread post count",
+    instagram: "Instagram posts count",
+    pinterest: "Pins count",
+    satsang: "Total Satsang Share",
+    ashram: "Total Likes of Day",
+    state: "Total Likes of Day",
+    seva: "Eg: 3 keyword",
+    youtube: "Total Videos watched"
+  },
+  hi: {
+    name: "उदाहरण: अमन दास/जसोला",
+    phone: "उदाहरण: 9876543210",
+    facebook: "फेसबुक पर कितने पोस्ट किए?",
+    twitter: "X पर कितने पोस्ट किए?",
+    thread: "थ्रेड पर कितने पोस्ट किए?",
+    instagram: "इंस्टाग्राम पर कितने पोस्ट किए?",
+    pinterest: "पिंट्रीसेट पर कितने पोस्ट किए?",
+    satsang: "शेयर की संख्या",
+    ashram: "पूरे दिन में कितने Likes किए?",
+    state: "पूरे दिन में कितने Likes किए?",
+    seva: "कितने कीवर्ड्स सर्च किए?",
+    youtube: "देखे गए वीडियो की संख्या ।"
+  }
+};
 
-  let currentLang = "en";
-  const fields = ["name", "phone", "facebook", "twitter", "thread", "instagram", "pinterest", "satsang", "ashram", "state", "seva", "youtube"];
+let currentLang = "en";
+const fields = ["name", "phone", "facebook", "twitter", "thread", "instagram", "pinterest", "satsang", "ashram", "state", "seva", "youtube"];
 
-  function renderForm(lang = "en") {
-    const formFields = document.getElementById("form-fields");
-    const t = translations[lang];
-    const p = placeholders[lang];
+function renderForm(lang = "en") {
+  const formFields = document.getElementById("form-fields");
+  const t = translations[lang];
+  const p = placeholders[lang];
 
-    document.getElementById("form-title").textContent = t.title;
-    document.getElementById("submitBtn").textContent = t.submit;
+  document.getElementById("form-title").textContent = t.title;
+  document.getElementById("submitBtn").textContent = t.submit;
 
-    formFields.innerHTML = `
+  formFields.innerHTML = `
+    <div class="col-md-6">
+      <label for="name">${t.name}</label>
+      <input type="text" class="form-control" id="name" placeholder="${p.name}" required>
+    </div>
+    <div class="col-md-6">
+      <label for="phone">${t.phone}</label>
+      <input type="tel" class="form-control" id="phone" placeholder="${p.phone}" required>
+    </div>
+  `;
+
+  fields.slice(2).forEach(field => {
+    formFields.innerHTML += `
       <div class="col-md-6">
-        <label for="name">${t.name}</label>
-        <input type="text" class="form-control" id="name" placeholder="${p.name}" required>
-      </div>
-      <div class="col-md-6">
-        <label for="phone">${t.phone}</label>
-        <input type="tel" class="form-control" id="phone" placeholder="${p.phone}" required>
+        <label for="${field}">${t[field]}</label>
+        <input type="number" class="form-control" id="${field}" placeholder="${p[field]}">
       </div>
     `;
-
-    fields.slice(2).forEach(field => {
-      formFields.innerHTML += `
-        <div class="col-md-6">
-          <label for="${field}">${t[field]}</label>
-          <input type="number" class="form-control" id="${field}" placeholder="${p[field]}">
-        </div>
-      `;
-    });
-
-    const savedPhone = localStorage.getItem('userPhone');
-    if (savedPhone) {
-      const phoneInput = document.getElementById('phone');
-      phoneInput.value = savedPhone;
-      phoneInput.readOnly = true;
-    }
-  }
-
-  document.getElementById('langBtn').addEventListener('click', () => {
-    currentLang = currentLang === "en" ? "hi" : "en";
-    document.getElementById("langBtn").textContent = currentLang === "en" ? "🌐 Hindi" : "🌐 English";
-    renderForm(currentLang);
   });
 
+  const savedPhone = localStorage.getItem("userPhone");
+  if (savedPhone) {
+    document.getElementById("phone").value = savedPhone;
+    document.getElementById("phone").readOnly = true;
+  }
+}
+
+document.getElementById("langBtn").addEventListener("click", () => {
+  currentLang = currentLang === "en" ? "hi" : "en";
+  document.getElementById("langBtn").textContent = currentLang === "en" ? "🌐 Hindi" : "🌐 English";
   renderForm(currentLang);
+});
 
-  // Theme toggle
-  const themeToggle = document.getElementById("themeToggle");
+const themeToggle = document.getElementById("themeToggle");
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("theme", theme);
+  themeToggle.textContent = theme === "dark" ? "☀️ Light Mode" : "🌓 Dark Mode";
+}
+themeToggle.addEventListener("click", () => {
+  const current = document.documentElement.getAttribute("data-theme") || "light";
+  const next = current === "light" ? "dark" : "light";
+  applyTheme(next);
+});
+applyTheme(localStorage.getItem("theme") || "light");
 
-  function applyTheme(theme) {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
-    themeToggle.textContent = theme === "dark" ? "☀️ Light Mode" : "🌓 Dark Mode";
-  }
+const scriptURL = 'https://script.google.com/macros/s/AKfycbx3xPUprl6OrGX1j283GljCHKmmBEKTnEEODlH-Eyp2LfGcStW-FR8P8r_sl4SfxqoCcQ/exec';
+const form = document.getElementById("activity-form");
+const overlay = document.getElementById("inactive-overlay");
+const messageDiv = document.getElementById("form-message");
+let formClosed = false;
 
-  themeToggle.addEventListener("click", () => {
-    const current = document.documentElement.getAttribute("data-theme") || "light";
-    const next = current === "light" ? "dark" : "light";
-    applyTheme(next);
+renderForm(currentLang);
+
+fetch(scriptURL)
+  .then(res => res.json())
+  .then(data => {
+    if (data.status !== "active") {
+      formClosed = true;
+      overlay.style.display = "flex";
+      messageDiv.textContent = translations[currentLang].closed;
+      form.querySelectorAll("input").forEach(input => input.readOnly = true);
+      document.getElementById("submitBtn").disabled = true;
+    }
+  })
+  .catch(() => {
+    messageDiv.textContent = translations[currentLang].closed;
   });
 
-  applyTheme(localStorage.getItem("theme") || "light");
+form.addEventListener("submit", function (e) {
+  e.preventDefault();
+  if (formClosed) return alert(translations[currentLang].closed);
 
-  const form = document.getElementById('activity-form');
-  const formContainer = document.getElementById('form-container');
-  const messageDiv = document.getElementById('form-message');
-  const overlay = document.getElementById('inactive-overlay');
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbx3xPUprl6OrGX1j283GljCHKmmBEKTnEEODlH-Eyp2LfGcStW-FR8P8r_sl4SfxqoCcQ/exec';
-  let formClosed = false;
+  const phoneInput = document.getElementById("phone");
+  const enteredPhone = phoneInput.value.trim();
+  const savedPhone = localStorage.getItem("userPhone");
 
-  fetch(scriptURL)
-    .then(res => res.json())
-    .then(data => {
-      if (data.status !== 'active') {
-        formClosed = true;
-        formContainer.classList.add('disabled');
-        overlay.style.display = 'flex';
-        messageDiv.textContent = translations[currentLang].closed;
-        form.querySelectorAll('input').forEach(input => input.readOnly = true);
-        document.getElementById('submitBtn').disabled = true;
-      }
-    })
-    .catch(() => {
-      messageDiv.textContent = translations[currentLang].closed;
-    });
+  if (savedPhone && savedPhone !== enteredPhone) {
+    alert("⚠️ आप सिर्फ अपने नंबर से रिपोर्ट दे सकते हैं।");
+    return;
+  }
 
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    if (formClosed) return alert(translations[currentLang].closed);
+  if (!savedPhone) {
+    localStorage.setItem("userPhone", enteredPhone);
+  }
 
-    const phoneInput = document.getElementById('phone');
-    const enteredPhone = phoneInput.value.trim();
-    const savedPhone = localStorage.getItem('userPhone');
+  const data = {};
+  fields.forEach(f => {
+    const el = document.getElementById(f);
+    data[f] = el ? el.value : "";
+  });
 
-    if (savedPhone && savedPhone !== enteredPhone) {
-      alert("⚠️ आप सिर्फ अपने नंबर से रिपोर्ट दे सकते हैं।");
-      return;
-    }
+  localStorage.setItem("lastSubmission", JSON.stringify(data));
 
-    if (!savedPhone) {
-      localStorage.setItem('userPhone', enteredPhone);
-    }
+  document.getElementById("submitBtn").disabled = true;
+  document.getElementById("submitBtn").textContent = currentLang === "en" ? "Submitting..." : "जमा हो रहा है...";
 
-    const data = {};
-    fields.forEach(f => data[f] = document.getElementById(f)?.value || '');
-
-    document.getElementById("submitBtn").disabled = true;
-    document.getElementById("submitBtn").textContent = currentLang === 'en' ? "Submitting..." : "जमा हो रहा है...";
-
-    fetch(scriptURL, {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
+  fetch(scriptURL, {
+    method: "POST",
+    body: JSON.stringify(data)
+  })
     .then(res => res.text())
     .then(text => {
       alert(text);
@@ -369,9 +341,44 @@
       document.getElementById("submitBtn").disabled = false;
       document.getElementById("submitBtn").textContent = translations[currentLang].submit;
     });
-  });
-</script>
+});
 
+document.getElementById("previewBtn").addEventListener("click", () => {
+  const last = JSON.parse(localStorage.getItem("lastSubmission"));
+  if (!last) return alert("No previous report found.");
+
+  const today = new Date();
+  const dateStr = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
+
+  const previewText = `
+//लास्ट सेवा रिपोर्ट जो अपने भेजी थी।।।।।
+
+◦•●◉✿ *सतगुरुदेव जी की जय* ✿◉●•◦
+
+*DAILY SEVA REPORT*
+-------------------------------------
+
+*VIDHANSABHA - Badarpur*
+
+*𝐍𝐀𝐌𝐄 - ${last.name || "N/A"}*
+
+*DATE - ${dateStr}*
+
+🔹 *FACEBOOK POST :- ${last.facebook || "0"}*
+🔹 *TWITTER(X) POST :- ${last.twitter || "0"}*
+🔹 *THREAD POST :- ${last.thread || "0"}*
+🔹 *INSTAGRAM POST :- ${last.instagram || "0"}*
+🔹 *PINTEREST POST :- ${last.pinterest || "0"}*
+🔹 *SATSANG SHARE SEVA :- ${last.satsang || "0"}*
+🔹 *ASHRAM 🆔 LIKE / SHARE :- ${last.ashram || "0"}*
+🔹 *STATE 🆔 LIKE / SHARE :- ${last.state || "0"}*
+🔹 *11 AM KEYWORD SEVA :- ${last.seva || "0"}*
+🔹 *YOUTUBE VIDEO SEVA :- ${last.youtube || "0"}*
+
+*🤲🏻 सेवा की दया बनाए रखना दाता 🤲🏻*
+  `;
+  alert(previewText);
+});
+</script>
 </body>
 </html>
-
